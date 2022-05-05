@@ -221,7 +221,8 @@ VariableList *read_vars(FILE *file, VariableList *vars, int current_nesting_leve
     
 	fseek(file, -1, SEEK_CUR);
     while (1) {
-    	if (!go_search(file, GO_FORWARD, ",", ";")) break;
+    	if (!go_search(file, GO_FORWARD, ",", "[]=;")) break;
+        printf("(%s)", var->name->data);
     	fseek(file, 1, SEEK_CUR);
     	
     	Variable *t = var_create();
