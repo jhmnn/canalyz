@@ -222,7 +222,6 @@ VariableList *read_vars(FILE *file, VariableList *vars, int current_nesting_leve
 	fseek(file, -1, SEEK_CUR);
     while (1) {
     	if (!go_search(file, GO_FORWARD, ",", "[]=;")) break;
-        printf("(%s)", var->name->data);
     	fseek(file, 1, SEEK_CUR);
     	
     	Variable *t = var_create();
@@ -253,22 +252,28 @@ VariableList *read_function_vars(FILE *file, VariableList *vars)
 
     int end_pos = get_function_end(file);
     int curly_braces_count = 0;
-
     while (1) {
         if (ftell(file) >= end_pos) break;
 
-        if (!go_search(file, GO_FORWARD, S_ST_NAME_C, "{}")) {
+        if (!go_search(file, GO_FORWARD, "=;,", "{}")) {
             fseek(file, -1, SEEK_CUR);
             if (fgetc(file) == '{') curly_braces_count++;
             else curly_braces_count--;
             continue;
         }
 
-        if (!find_var(file)) continue;
+        int save_pos = ftell(file) + 1;
+
+        fseek(file, -1, SEEK_CUR);
+        if (!find_var(file)) {
+            go_to_pos(file, save_pos);
+            continue;
+        }
 
         read_vars(file, vars, curly_braces_count);
 
-        go_search(file, GO_FORWARD, S_ST_NAME_C, "}");
+        go_search(file, GO_FORWARD, ";", "{}");
+        fseek(file, 1, SEEK_CUR);
     }
 
     return vars;
@@ -412,19 +417,24 @@ void read_all_global_vars(FILE *file, VariableList *global_vars)
     while (1) {
         if (feof(file)) return;
 
-        if (!go_search(file, GO_FORWARD, S_ST_NAME_C, "{()")) {
+        if (!go_search(file, GO_FORWARD, "=;,", "{()")) {
             fseek(file, -1, SEEK_CUR);
             go_skip_block(file);
             continue;
         }
 
+        int save_pos = ftell(file) + 1;
+
+        fseek(file, -1, SEEK_CUR);
         if (!find_var(file)) {
-            fseek(file, -1, SEEK_CUR);
-            if (!go_search(file, GO_FORWARD, "({", ";")) go_skip_block(file);
+            go_to_pos(file, save_pos);
             continue;
         }
 
         read_vars(file, global_vars, 0);
+
+        go_search(file, GO_FORWARD, ";", "{}");
+        fseek(file, 1, SEEK_CUR);
     }
 }
 

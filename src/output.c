@@ -44,6 +44,8 @@ void output_fu_info(FunctionInfoList *node)
 {
     int count = 0;
 
+    printf("\n----------\n\e[1;92mFunctions\e[0m\n----------\n");
+
     while (node) {
         printf("\e[1;37m%d: \e[1;34m%s \e[1;33m%s\e[0m (", node->fu_info->dec_line, node->fu_info->type->data, node->fu_info->name->data);
 
@@ -74,21 +76,23 @@ void output_fu_info(FunctionInfoList *node)
                 vars = vars->next;
             }
 
-            printf("\b\b}\n\n");
+            printf("\b\b}\n");
         } else {
-            printf("}\n\n");
+            printf("}\n");
         }
 
         node = node->next;
         count++;
     }
 
-    printf("\e[1;92mFunctions: \e[1;37m%d\e[0m\n----------", count);
+    printf("----------\n\e[1;92mFunctions: \e[1;37m%d\e[0m\n----------", count);
 }
 
 void output_global_vars(VariableList *list)
 {
     int count = 0;
+
+    printf("\n-----------------\n\e[1;92mGlobal variables\e[0m\n-----------------\n");
 
     while (list) {
         printf("\e[1;37m%d: \e[1;34m%s \e[1;36m%s\e[0m\n", list->var->dec_line, list->var->type->data, list->var->name->data);
@@ -96,7 +100,7 @@ void output_global_vars(VariableList *list)
         count++;
     }
 
-    if (count) printf("\n\e[1;92mGlobal variables: \e[1;37m%d\e[0m\n-----------------", count);
+    printf("-----------------\n\e[1;92mGlobal variables: \e[1;37m%d\e[0m\n-----------------\n", count);
 }
 
 void output_shadowed_global_vars_conflict(FunctionInfoList *fu_infos, VariableList *global_vars)

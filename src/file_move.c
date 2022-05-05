@@ -183,13 +183,10 @@ int find_function_call_begin(FILE *file)
 
 int find_var(FILE *file)
 {
-    int start_pos = ftell(file);
-
-    if (!go_search(file, GO_FORWARD, S_SPACE, "{}();")) return 0;
-    if (!go_search(file, GO_FORWARD, S_ST_NAME_C, "{}();")) return 0;
-    if (!go_search(file, GO_FORWARD, "=;,[", "{}()")) return 0;
-
-    go_to_pos(file, start_pos);
+    if (!go_search(file, GO_BACK, S_ST_NAME_C, "{}();")) return 0;
+    if (!go_search(file, GO_BACK, S_SPACE, "{}();")) return 0;
+    if (!go_search(file, GO_BACK, S_ST_NAME_C, "{}();")) return 0;
+    if (!go_search(file, GO_BACK, S_SPACE, "{}();")) return 0;
 
     return 1;
 }

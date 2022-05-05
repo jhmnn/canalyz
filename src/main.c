@@ -41,11 +41,8 @@ int main(int argc, char *argv[])
     fseek(file, 0, SEEK_SET);
     cur_file_line = 1;
     
-    putchar('\n');
     output_fu_info(fu_infos);
-    putchar('\n');
     output_global_vars(global_vars);
-    putchar('\n');
     output_conflicts(file, fu_infos, global_vars);
 
     fclose(file);
